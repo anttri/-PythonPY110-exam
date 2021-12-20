@@ -5,23 +5,26 @@ BOOKS = "books.txt"
 INPUT_FILE = "input.json"
 
 
+# Основная функция
 def main():
     from conf import model
-
-    to_json = {"model": model,
-               "fields": {
-                    "title": title(),
-                    "year": year(),
-                    "pages": pages(),
-                    "isbn13": isbn13(),
-                    "rating": rating(),
-                    "price": price(),
-                    "author": author()
-                        }
-               }
+    book_list = []
+    for i in range(100):
+        i = {"model": model,
+             "fields": {
+                 "title": title(),
+                 "year": year(),
+                 "pages": pages(),
+                 "isbn13": isbn13(),
+                 "rating": rating(),
+                 "price": price(),
+                 "author": author()
+             }
+             }
+        book_list.append(i)
 
     with open(INPUT_FILE, "w", encoding="utf-8") as f:
-        json.dump(to_json, f, indent=4, ensure_ascii=False)
+        json.dump(book_list, f, indent=4, ensure_ascii=False)
 
 
 # Вытаскиваем название книги из books.txt
