@@ -5,7 +5,18 @@ BOOKS = "books.txt"
 INPUT_FILE = "input.json"
 
 
+# Декортаор проверки длины названия книги
+def check_len(func):
+    def wrapper():
+        if len(title()) > 50:
+            raise IOError("Too long book name!")
+        else:
+            return func()
+    return wrapper
+
+
 # Основная функция
+@check_len
 def main():
     from conf import model
     book_list = []
