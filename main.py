@@ -6,10 +6,21 @@ from conf import model
 BOOKS = "books.txt"
 INPUT_FILE = "input.json"
 
-""" Функция вытаскивающая название книги из books.txt """
+
+def check_len(func):
+    """ Декортаор проверки длины названия книги """
+    def wrapper():
+        if len(func()) > 50:
+            raise ValueError("Too long book name!")
+        else:
+            return func()
+
+    return wrapper
 
 
+@check_len
 def title():
+    """ Функция вытаскивающая название книги из books.txt """
     with open(BOOKS, "r", encoding="utf-8") as f:
         book_list = []
         for b in f:
@@ -19,93 +30,67 @@ def title():
     return book
 
 
-""" Функция создающая ранодомный год """
-
-
 def year():
+    """ Функция создающая ранодомный год """
     some_year = random.randrange(1990, 2021, 1)
     return some_year
 
 
-""" Функция создающая ранодомную страницу """
-
-
 def pages():
+    """ Функция создающая ранодомную страницу """
     some_page = random.randrange(1, 500, 1)
     return some_page
 
 
-""" Функция создающая книжный номер, по стандарту isbn13 """
-
-
 def isbn13():
+    """ Функция создающая книжный номер, по стандарту isbn13 """
     fake = Faker()
     return fake.isbn13()
 
 
-""" Функция создающая ранодомный рейтинг """
-
-
 def rating():
+    """ Функция создающая ранодомный рейтинг """
     some_rat = random.uniform(0.0, 5.0)
     return float(round(some_rat))
 
 
-""" Функция создающая ранодомную цену книги """
-
-
 def price():
+    """ Функция создающая ранодомную цену книги """
     some_price = random.uniform(1.0, 1500.0)
     return float(round(some_price))
 
 
-""" Функция создающая фйкового автора книга через faker """
-
-
 def author():
+    """ Функция создающая фйкового автора книга через faker """
     fake = Faker(locale="ru_RU")
     return fake.name()
 
 
-""" Декортаор проверки длины названия книги """
-
-
-def check_len(func):
-    def wrapper():
-        if len(title()) > 50:
-            raise ValueError("Too long book name!")
-        else:
-            return func()
-    return wrapper
-
-
-""" Функция-генератор для создания словаря """
-
-
-@check_len
-def creat_dict():
-    book_mod = {"model": model,
-                "fields": {
-                    "title": title(),
-                    "year": year(),
-                    "pages": pages(),
-                    "isbn13": isbn13(),
-                    "rating": rating(),
-                    "price": price(),
-                    "author": author()
-                }
-                }
-    yield book_mod
-
-
-""" Функция main """
-
-
 def main():
+    """ Функция main """
     books_list = []
+
+    def creat_dict():
+        """ Функция-генератор для создания словаря """
+        book_mod = {"model": model,
+                    "pk": count,
+                    "fields": {
+                        "title": title(),
+                        "year": year(),
+                        "pages": pages(),
+                        "isbn13": isbn13(),
+                        "rating": rating(),
+                        "price": price(),
+                        "author": author()
+                    }
+                    }
+        yield book_mod
+
+    count = 1
 
     for i in range(100):
         books_list.append(next(creat_dict()))
+        count += 1
 
     with open(INPUT_FILE, "w", encoding="utf-8") as f:
         json.dump(books_list, f, indent=4, ensure_ascii=False)
